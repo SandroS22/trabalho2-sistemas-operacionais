@@ -44,8 +44,8 @@ public class Memoria {
 		return quadros;
 	}
 
-	public void setQuadross(List<Pagina> quadross) {
-		this.quadros = quadross;
+	public void setQuadros(List<Pagina> quadros) {
+		this.quadros = quadros;
 	}
 
 	public void adicionar(Pagina pagina) {
@@ -55,17 +55,19 @@ public class Memoria {
 	public Integer fifo() {
 		Integer pageFault = 0;
 		for (Pagina pagina : paginas) {
+			boolean presente = false;
+			for (Pagina pag : quadros) {
+				if (pag.getId() == pagina.getId()) {
+					presente = true;
+				}
+			}
 			if (quadros.size() < maxQuadros) {
 				pagina.setPresente(1);
-				quadros.add(pagina);
+				if (!presente) {
+					quadros.add(pagina);
+				}
 			} else {
 				int tempPosicao = 0;
-				boolean presente = false;
-				for (Pagina pag : quadros) {
-					if (pag.getId() == pagina.getId()) {
-						presente = true;
-					}
-				}
 				if (!presente) {
 					for (int i = 0; i < quadros.size(); i++) {
 						if (quadros.get(i).getTempo() > quadros.get(tempPosicao).getTempo()) {
