@@ -88,4 +88,54 @@ public class Memoria {
 		return pageFault;
 	}
 
+	public Integer lru() {
+		Integer pageFault = 0;
+		for (Pagina pagina : paginas) {
+			boolean presente = false;
+			int idPresente = -1;
+			for (Pagina pag : quadros) {
+				if (pag.getId() == pagina.getId()) {
+					presente = true;
+					idPresente = pag.getId();
+				}
+			}
+			if (quadros.size() < maxQuadros) {
+				pagina.setPresente(1);
+				if (!presente) {
+					quadros.add(pagina);
+				} else {
+					for (Pagina p : quadros) {
+						if (presente && p.getId() == idPresente) {
+							p.setTempo(0);
+						}
+					}
+				}
+			} else {
+				int tempPosicao = 0;
+				if (!presente) {
+					for (int i = 0; i < quadros.size(); i++) {
+						if (quadros.get(i).getTempo() > quadros.get(tempPosicao).getTempo()) {
+							tempPosicao = i;
+						}
+					}
+					quadros.get(tempPosicao).setPresente(0);
+					quadros.remove(tempPosicao);
+					pageFault += 1;
+					miss += 1;
+					quadros.add(pagina);
+				} else {
+					for (Pagina p : quadros) {
+						if (presente && p.getId() == idPresente) {
+							p.setTempo(0);
+						}
+					}
+				}
+			}
+			for (Pagina p : quadros) {
+				p.setTempo(p.getTempo() + 1);
+			}
+		}
+		return pageFault;
+	}
+
 }
